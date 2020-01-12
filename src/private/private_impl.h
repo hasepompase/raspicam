@@ -214,6 +214,10 @@ namespace raspicam {
             {
                 return State.shutterSpeed;
             }
+            bool getVideoStabilization() const
+            {
+                return State.videoStabilisation;
+            }
             RASPICAM_EXPOSURE getExposure() const
             {
                 return State.rpc_exposureMode;

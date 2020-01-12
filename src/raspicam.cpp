@@ -154,6 +154,7 @@ namespace raspicam {
     unsigned int RaspiCam::getRotation() const{return _impl->getRotation()  ;}
     int RaspiCam::getISO() const{return _impl->getISO() ;}
     unsigned int RaspiCam::getShutterSpeed() const{return _impl->getShutterSpeed();}
+    bool RaspiCam::getVideoStabilization() const{return _impl->getVideoStabilization();}
 
     int RaspiCam::getSharpness() const{return _impl->getSharpness() ;}
     int RaspiCam::getContrast() const{return _impl->getContrast() ;}

@@ -159,6 +159,7 @@ namespace raspicam {
         int getContrast() const;
         int getSaturation() const;
         unsigned int getShutterSpeed() const;
+        bool getVideoStabilization() const;
         RASPICAM_EXPOSURE getExposure() const ;
         RASPICAM_AWB getAWB() const;
         float getAWBG_red()const;
