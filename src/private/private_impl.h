@@ -222,6 +222,10 @@ namespace raspicam {
             {
                 return State.rpc_exposureMode;
             }
+            int getExposureCompensation() const
+            {
+                return State.exposureCompensation;
+            }
             RASPICAM_AWB getAWB() const
             {
                 return State.rpc_awbMode;

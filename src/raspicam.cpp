@@ -160,6 +160,7 @@ namespace raspicam {
     int RaspiCam::getContrast() const{return _impl->getContrast() ;}
     int RaspiCam::getSaturation() const{return _impl->getSaturation() ;}
     RASPICAM_EXPOSURE RaspiCam::getExposure() const {return _impl->getExposure() ;}
+    int RaspiCam::getExposureCompensation() const {return _impl->getExposureCompensation() ;}
     RASPICAM_AWB RaspiCam::getAWB() const{return _impl->getAWB() ;}
     float RaspiCam::getAWBG_red()const{return _impl->getAWBG_red();}
     float RaspiCam::getAWBG_blue()const{return _impl->getAWBG_blue();}

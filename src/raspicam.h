@@ -164,6 +164,7 @@ namespace raspicam {
         RASPICAM_AWB getAWB() const;
         float getAWBG_red()const;
         float getAWBG_blue()const;
+        int getExposureCompensation()const;
         RASPICAM_IMAGE_EFFECT getImageEffect() const ;
         RASPICAM_METERING getMetering() const;
         int getFrameRate() const;
