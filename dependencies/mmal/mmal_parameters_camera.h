@@ -131,6 +131,16 @@ enum {
    MMAL_PARAMETER_STILLS_DENOISE,            /**< Takes a @ref MMAL_PARAMETER_BOOLEAN_T */
    MMAL_PARAMETER_ANNOTATE,                  /**< Takes a @ref MMAL_PARAMETER_CAMERA_ANNOTATE_T */
    MMAL_PARAMETER_STEREOSCOPIC_MODE,         /**< Takes a @ref MMAL_PARAMETER_STEREOSCOPIC_MODE_T */
+   MMAL_PARAMETER_CAMERA_INTERFACE,          /**< Takes a @ref MMAL_PARAMETER_CAMERA_INTERFACE_T */
+   MMAL_PARAMETER_CAMERA_CLOCKING_MODE,      /**< Takes a @ref MMAL_PARAMETER_CAMERA_CLOCKING_MODE_T */
+   MMAL_PARAMETER_CAMERA_RX_CONFIG,          /**< Takes a @ref MMAL_PARAMETER_CAMERA_RX_CONFIG_T */
+   MMAL_PARAMETER_CAMERA_RX_TIMING,          /**< Takes a @ref MMAL_PARAMETER_CAMERA_RX_TIMING_T */
+   MMAL_PARAMETER_DPF_CONFIG,                /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
+
+   /* 0x50 */
+   MMAL_PARAMETER_JPEG_RESTART_INTERVAL,     /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
+   MMAL_PARAMETER_CAMERA_ISP_BLOCK_OVERRIDE, /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
+   MMAL_PARAMETER_LENS_SHADING_OVERRIDE,     /**< Takes a @ref MMAL_PARAMETER_LENS_SHADING_T */
 };
 
 /** Thumbnail configuration parameter type */
@@ -751,5 +761,18 @@ typedef struct MMAL_PARAMETER_STEREOSCOPIC_MODE_T
    MMAL_BOOL_T decimate;
    MMAL_BOOL_T swap_eyes;
 } MMAL_PARAMETER_STEREOSCOPIC_MODE_T;
+
+typedef struct MMAL_PARAMETER_LENS_SHADING_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_BOOL_T enabled;
+   uint32_t grid_cell_size;
+   uint32_t grid_width;
+   uint32_t grid_stride;
+   uint32_t grid_height;
+   uint32_t mem_handle_table;
+   uint32_t ref_transform;
+} MMAL_PARAMETER_LENS_SHADING_T;
 
 #endif  /* MMAL_PARAMETERS_CAMERA_H */

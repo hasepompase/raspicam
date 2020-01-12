@@ -41,6 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mmal/util/mmal_util.h"
 #include "mmal/util/mmal_util_params.h"
 #include "mmal/util/mmal_default_components.h"
+#include "/opt/vc/include/interface/vcsm/user-vcsm.h"
 using namespace std;
 namespace raspicam {
     namespace _private{
@@ -163,6 +164,8 @@ namespace raspicam {
             if ( State.camera_component )
                 mmal_component_disable ( State.camera_component );
 
+            if ( State.lens_shading )
+               vcsm_free( State.lens_shading );
 
             destroy_camera_component ( &State );
 
@@ -285,6 +288,31 @@ namespace raspicam {
             cam_config.fast_preview_resume = 0;
             cam_config.use_stc_timestamp = MMAL_PARAM_TIMESTAMP_MODE_RESET_STC;
             mmal_port_parameter_set ( camera->control, &cam_config.hdr );
+
+            // set lens shading parameters
+            #include "ls_table.h"
+
+            MMAL_PARAMETER_LENS_SHADING_T lens_shading;
+            lens_shading.hdr.id = MMAL_PARAMETER_LENS_SHADING_OVERRIDE;
+            lens_shading.hdr.size = sizeof( lens_shading );
+            lens_shading.enabled = MMAL_TRUE;
+            lens_shading.grid_cell_size = 64;
+            lens_shading.grid_width = grid_width;
+            lens_shading.grid_stride = grid_width;
+            lens_shading.grid_height = grid_height;
+            lens_shading.ref_transform = ref_transform;
+
+            void *grid;
+            state->lens_shading = vcsm_malloc(lens_shading.grid_stride*lens_shading.grid_height*4, "ls_grid");
+            lens_shading.mem_handle_table = vcsm_vc_hdl_from_hdl(state->lens_shading);
+
+            grid = vcsm_lock(state->lens_shading);
+
+            memcpy(grid, ls_grid, vcos_min(sizeof(ls_grid), lens_shading.grid_stride*lens_shading.grid_height*4));
+
+            vcsm_unlock_hdl(state->lens_shading);
+
+            mmal_port_parameter_set(camera->control, &lens_shading.hdr);
 
             MMAL_PARAMETER_CHANGE_EVENT_REQUEST_T change_event_request =
                     {{MMAL_PARAMETER_CHANGE_EVENT_REQUEST, sizeof(MMAL_PARAMETER_CHANGE_EVENT_REQUEST_T)},
