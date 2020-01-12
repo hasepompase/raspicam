@@ -145,6 +145,9 @@ namespace raspicam {
         _impl->setSensorMode ( mode );
     }
 
+    void RaspiCam::setLensShadingTable ( const char* ls_table ) {
+        _impl->setLensShadingTable( ls_table );
+    }
 
 
     RASPICAM_FORMAT RaspiCam::getFormat()const{return _impl->getFormat( ); }

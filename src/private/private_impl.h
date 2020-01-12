@@ -84,6 +84,10 @@ namespace raspicam {
                 void* _userCallbackData;
 
             };
+            uint32_t ls_width;
+            uint32_t ls_height;
+            uint32_t ls_ref_transform;
+            uint8_t* ls_data;
 
             public:
 
@@ -171,6 +175,7 @@ namespace raspicam {
             void setShutterSpeed ( unsigned int shutter ); //currently not  supported
             //sets frame rate. Can not be changed once camera is opened
             void setFrameRate ( int fps );
+            void setLensShadingTable ( const char* ls_table );
 
             RASPICAM_FORMAT  getFormat() const {return State.captureFtm;}
             //Accessors

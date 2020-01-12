@@ -58,11 +58,23 @@ namespace raspicam {
             _isCapturing=false;
             //set default state params
             setDefaultStateParams();
+
+            ls_width = 0;
+            ls_height = 0;
+            ls_ref_transform = 0;
+            ls_data = NULL;
         }
 
         Private_Impl::~Private_Impl() {
 
             release();
+
+            if( ls_width ) {
+                ls_width = 0;
+                ls_height = 0;
+                ls_ref_transform = 0;
+                delete[] ls_data;
+            }
         }
 
         void Private_Impl::setDefaultStateParams() {
@@ -290,29 +302,32 @@ namespace raspicam {
             mmal_port_parameter_set ( camera->control, &cam_config.hdr );
 
             // set lens shading parameters
-            #include "ls_table.h"
+            if( ls_width ) {
+                size_t ls_size = ls_width * ls_height * 4;
 
-            MMAL_PARAMETER_LENS_SHADING_T lens_shading;
-            lens_shading.hdr.id = MMAL_PARAMETER_LENS_SHADING_OVERRIDE;
-            lens_shading.hdr.size = sizeof( lens_shading );
-            lens_shading.enabled = MMAL_TRUE;
-            lens_shading.grid_cell_size = 64;
-            lens_shading.grid_width = grid_width;
-            lens_shading.grid_stride = grid_width;
-            lens_shading.grid_height = grid_height;
-            lens_shading.ref_transform = ref_transform;
+                MMAL_PARAMETER_LENS_SHADING_T lens_shading;
+                lens_shading.hdr.id = MMAL_PARAMETER_LENS_SHADING_OVERRIDE;
+                lens_shading.hdr.size = sizeof( lens_shading );
+                lens_shading.enabled = MMAL_TRUE;
+                lens_shading.grid_cell_size = 64;
+                lens_shading.grid_width = ls_width;
+                lens_shading.grid_stride = ls_width;
+                lens_shading.grid_height = ls_height;
+                lens_shading.ref_transform = ls_ref_transform;
 
-            void *grid;
-            state->lens_shading = vcsm_malloc(lens_shading.grid_stride*lens_shading.grid_height*4, "ls_grid");
-            lens_shading.mem_handle_table = vcsm_vc_hdl_from_hdl(state->lens_shading);
+                void *grid;
+                state->lens_shading = vcsm_malloc(ls_size, "ls_grid");
+                lens_shading.mem_handle_table = vcsm_vc_hdl_from_hdl(state->lens_shading);
 
-            grid = vcsm_lock(state->lens_shading);
+                grid = vcsm_lock(state->lens_shading);
 
-            memcpy(grid, ls_grid, vcos_min(sizeof(ls_grid), lens_shading.grid_stride*lens_shading.grid_height*4));
+                memcpy(grid, ls_data, ls_size);
 
-            vcsm_unlock_hdl(state->lens_shading);
+                vcsm_unlock_hdl(state->lens_shading);
 
-            mmal_port_parameter_set(camera->control, &lens_shading.hdr);
+                mmal_port_parameter_set(camera->control, &lens_shading.hdr);
+            }
+
 
             MMAL_PARAMETER_CHANGE_EVENT_REQUEST_T change_event_request =
                     {{MMAL_PARAMETER_CHANGE_EVENT_REQUEST, sizeof(MMAL_PARAMETER_CHANGE_EVENT_REQUEST_T)},
@@ -780,6 +795,24 @@ namespace raspicam {
 
         void Private_Impl::setFrameRate ( int frames_per_second ) {
             State.framerate = frames_per_second;
+        }
+
+        void Private_Impl::setLensShadingTable ( const char* ls_table ) {
+            if( ls_width ) {
+                ls_width = 0;
+                ls_height = 0;
+                ls_ref_transform = 0;
+                delete[] ls_data;
+            }
+
+            const size_t n = sizeof( uint32_t );
+            memcpy( &ls_ref_transform, ls_table, n );
+            memcpy( &ls_width, &ls_table[ n ], n );
+            memcpy( &ls_height, &ls_table[ 2 * n ], n );
+
+            const size_t t = ls_width * ls_height * 4;
+            ls_data = new uint8_t[ t ];
+            memcpy( ls_data, &ls_table[ 3 * n ], t );
         }
 
         MMAL_PARAM_EXPOSUREMETERINGMODE_T Private_Impl::convertMetering ( RASPICAM_METERING metering ) {

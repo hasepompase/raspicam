@@ -147,6 +147,7 @@ namespace raspicam {
         void setVerticalFlip ( bool vFlip );
         void setFrameRate ( int frames_per_second );
         void setSensorMode ( int mode );
+        void setLensShadingTable ( const char* ls_table );
 
         //Accessors
         RASPICAM_FORMAT getFormat() const;
