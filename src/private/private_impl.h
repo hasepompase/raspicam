@@ -84,10 +84,6 @@ namespace raspicam {
                 void* _userCallbackData;
 
             };
-            uint32_t ls_width;
-            uint32_t ls_height;
-            uint32_t ls_ref_transform;
-            uint8_t* ls_data;
 
             public:
 

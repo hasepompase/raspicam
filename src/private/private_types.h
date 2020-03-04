@@ -87,6 +87,10 @@ namespace raspicam {
             float awbg_red;//white balance red and blue
             float awbg_blue;
             unsigned int lens_shading;          /// VCSM handle to memory for lens shading override
+            uint32_t ls_width;
+            uint32_t ls_height;
+            uint32_t ls_ref_transform;
+            uint8_t* ls_data;
         } ;
 
         //clean buffer
