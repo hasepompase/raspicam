@@ -144,7 +144,12 @@ namespace raspicam {
     void RaspiCam::setSensorMode ( int mode ) {
         _impl->setSensorMode ( mode );
     }
-
+    void RaspiCam::setAnalogGain ( float gain ) {
+            _impl->setAnalogGain ( gain );
+    }
+    void RaspiCam::setDigitalGain ( float gain ) {
+            _impl->setDigitalGain ( gain );
+    }
     void RaspiCam::setLensShadingTable ( const char* ls_table ) {
         _impl->setLensShadingTable( ls_table );
     }
@@ -173,6 +178,8 @@ namespace raspicam {
     int RaspiCam::getFrameRate() const{return _impl->getFrameRate() ;}
     bool RaspiCam::isHorizontallyFlipped() const {return _impl->isHorizontallyFlipped()  ;}
     bool RaspiCam::isVerticallyFlipped() const {return _impl->isVerticallyFlipped() ;}
+    float RaspiCam::getAnalogGain() const {return _impl->getAnalogGain() ;}
+    float RaspiCam::getDigitalGain() const {return _impl->getDigitalGain() ;}
 
     //Returns an id of the camera. We assume the camera id is the one of the raspberry
     //the id is obtained using raspberry serial number obtained in /proc/cpuinfo

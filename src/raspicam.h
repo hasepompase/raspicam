@@ -147,6 +147,8 @@ namespace raspicam {
         void setVerticalFlip ( bool vFlip );
         void setFrameRate ( int frames_per_second );
         void setSensorMode ( int mode );
+        void setAnalogGain ( float gain );
+        void setDigitalGain ( float gain );
         void setLensShadingTable ( const char* ls_table );
 
         //Accessors
@@ -171,6 +173,8 @@ namespace raspicam {
         int getFrameRate() const;
         bool isHorizontallyFlipped() const ;
         bool isVerticallyFlipped() const ;
+        float getAnalogGain() const;
+        float getDigitalGain() const;
 
 
         /** Returns an id of the camera. We assume the camera id is the one of the raspberry

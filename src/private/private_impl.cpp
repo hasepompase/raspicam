@@ -508,6 +508,45 @@ namespace raspicam {
         }
 
 
+        void Private_Impl::commitAnalogGain() {
+            if( State.again == 0 ){
+                return;
+            }
+
+            MMAL_RATIONAL_T param_analog_gain;
+            MMAL_STATUS_T   status;
+            param_analog_gain.num   = State.again * 65536;
+            param_analog_gain.den   = 65536;
+
+            status = mmal_port_parameter_set_rational( State.camera_component->control,
+                                                       MMAL_PARAMETER_ANALOG_GAIN,
+                                                       param_analog_gain );
+
+            if( status != MMAL_SUCCESS ) {
+                cout << __func__ << ": Failed to set analog gain parameter.\n";
+            }
+        }
+
+        void Private_Impl::commitDigitalGain() {
+            if( State.dgain == 0 ){
+                return;
+            }
+
+            MMAL_RATIONAL_T param_digital_gain;
+            MMAL_STATUS_T   status;
+            param_digital_gain.num   = State.dgain * 65536;
+            param_digital_gain.den   = 65536;
+
+            status = mmal_port_parameter_set_rational( State.camera_component->control,
+                                                       MMAL_PARAMETER_DIGITAL_GAIN,
+                                                       param_digital_gain );
+
+            if( status != MMAL_SUCCESS ) {
+                cout << __func__ << ": Failed to set digital gain parameter.\n";
+            }
+        }
+
+
         /**
          * Set the specified camera to all the specified settings
          * @param camera Pointer to camera component
@@ -534,6 +573,8 @@ namespace raspicam {
             commitVideoStabilization();
             commitAWB();
             commitAWB_RB();
+            commitAnalogGain();
+            commitDigitalGain();
 
         }
         void Private_Impl::commitVideoStabilization() {
@@ -794,6 +835,15 @@ namespace raspicam {
 
         void Private_Impl::setFrameRate ( int frames_per_second ) {
             State.framerate = frames_per_second;
+        }
+
+        void Private_Impl::setAnalogGain ( float gain ) {
+            State.again = gain;
+            if ( isOpened() ) commitAnalogGain();
+        }
+        void Private_Impl::setDigitalGain ( float gain ) {
+            State.dgain = gain;
+            if ( isOpened() ) commitDigitalGain();
         }
 
         void Private_Impl::setLensShadingTable ( const char* ls_table ) {

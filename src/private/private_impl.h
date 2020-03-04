@@ -172,6 +172,8 @@ namespace raspicam {
             //sets frame rate. Can not be changed once camera is opened
             void setFrameRate ( int fps );
             void setLensShadingTable ( const char* ls_table );
+            void setAnalogGain ( float gain );
+            void setDigitalGain ( float gain );
 
             RASPICAM_FORMAT  getFormat() const {return State.captureFtm;}
             //Accessors
@@ -257,6 +259,14 @@ namespace raspicam {
             {
                 return State.vflip;
             }
+            float getAnalogGain () const
+            {
+                return State.again;
+            }
+            float getDigitalGain () const
+            {
+                return State.dgain;
+            }
 
 
             //Returns an id of the camera. We assume the camera id is the one of the raspberry
@@ -292,6 +302,8 @@ namespace raspicam {
             void commitVideoStabilization();
             void commitShutterSpeed();
             void commitAWB_RB();
+            void commitAnalogGain();
+            void commitDigitalGain();
 
             MMAL_PARAM_EXPOSUREMODE_T convertExposure ( RASPICAM_EXPOSURE exposure ) ;
             MMAL_PARAM_AWBMODE_T  convertAWB ( RASPICAM_AWB awb ) ;
