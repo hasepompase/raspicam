@@ -595,8 +595,10 @@ namespace raspicam {
                     MMAL_PARAMETER_CAMERA_SETTINGS_T *settings = (MMAL_PARAMETER_CAMERA_SETTINGS_T*)param;
 
                     pData->pstate->shutterSpeed = settings->exposure;
-                    pData->pstate->awbg_red = float(settings->awb_red_gain.num)/settings->awb_red_gain.den;
-                    pData->pstate->awbg_blue = float(settings->awb_blue_gain.num)/settings->awb_blue_gain.den;
+                    pData->pstate->awbg_red     = float(settings->awb_red_gain.num)/settings->awb_red_gain.den;
+                    pData->pstate->awbg_blue    = float(settings->awb_blue_gain.num)/settings->awb_blue_gain.den;
+                    pData->pstate->again        = float(settings->analog_gain.num)/settings->analog_gain.den;
+                    pData->pstate->dgain        = float(settings->digital_gain.num)/settings->digital_gain.den;
                 }
             }
             else if (buffer->cmd == MMAL_EVENT_ERROR)
