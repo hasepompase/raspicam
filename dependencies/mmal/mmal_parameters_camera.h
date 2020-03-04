@@ -141,6 +141,14 @@ enum {
    MMAL_PARAMETER_JPEG_RESTART_INTERVAL,     /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
    MMAL_PARAMETER_CAMERA_ISP_BLOCK_OVERRIDE, /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
    MMAL_PARAMETER_LENS_SHADING_OVERRIDE,     /**< Takes a @ref MMAL_PARAMETER_LENS_SHADING_T */
+   MMAL_PARAMETER_BLACK_LEVEL,               /**< Takes a @ref MMAL_PARAMETER_UINT32_T */
+   MMAL_PARAMETER_RESIZE_PARAMS,             /**< Takes a @ref MMAL_PARAMETER_RESIZE_T */
+   MMAL_PARAMETER_CROP,                      /**< Takes a @ref MMAL_PARAMETER_CROP_T */
+   MMAL_PARAMETER_OUTPUT_SHIFT,              /**< Takes a @ref MMAL_PARAMETER_INT32_T */
+   MMAL_PARAMETER_CCM_SHIFT,                 /**< Takes a @ref MMAL_PARAMETER_INT32_T */
+   MMAL_PARAMETER_CUSTOM_CCM,                /**< Takes a @ref MMAL_PARAMETER_CUSTOM_CCM_T */
+   MMAL_PARAMETER_ANALOG_GAIN,               /**< Takes a @ref MMAL_PARAMETER_RATIONAL_T */
+   MMAL_PARAMETER_DIGITAL_GAIN,              /**< Takes a @ref MMAL_PARAMETER_RATIONAL_T */
 };
 
 /** Thumbnail configuration parameter type */
@@ -220,6 +228,7 @@ typedef enum MMAL_PARAM_AWBMODE_T
    MMAL_PARAM_AWBMODE_INCANDESCENT,
    MMAL_PARAM_AWBMODE_FLASH,
    MMAL_PARAM_AWBMODE_HORIZON,
+   MMAL_PARAM_AWBMODE_GREYWORLD,
    MMAL_PARAM_AWBMODE_MAX = 0x7fffffff
 } MMAL_PARAM_AWBMODE_T;
 
@@ -500,6 +509,7 @@ typedef struct MMAL_PARAMETER_CAMERA_CONFIG_T
 
 #define MMAL_PARAMETER_CAMERA_INFO_MAX_CAMERAS 4
 #define MMAL_PARAMETER_CAMERA_INFO_MAX_FLASHES 2
+#define MMAL_PARAMETER_CAMERA_INFO_MAX_STR_LEN 16
 
 typedef struct MMAL_PARAMETER_CAMERA_INFO_CAMERA_T
 {
@@ -507,6 +517,7 @@ typedef struct MMAL_PARAMETER_CAMERA_INFO_CAMERA_T
    uint32_t    max_width;
    uint32_t    max_height;
    MMAL_BOOL_T lens_present;
+   char        camera_name[MMAL_PARAMETER_CAMERA_INFO_MAX_STR_LEN];
 } MMAL_PARAMETER_CAMERA_INFO_CAMERA_T;
 
 typedef enum MMAL_PARAMETER_CAMERA_INFO_FLASH_TYPE_T
@@ -746,6 +757,61 @@ typedef struct MMAL_PARAMETER_CAMERA_ANNOTATE_V2_T
    char text[MMAL_CAMERA_ANNOTATE_MAX_TEXT_LEN_V2];
 } MMAL_PARAMETER_CAMERA_ANNOTATE_V2_T;
 
+#define MMAL_CAMERA_ANNOTATE_MAX_TEXT_LEN_V3 256
+typedef struct MMAL_PARAMETER_CAMERA_ANNOTATE_V3_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_BOOL_T enable;
+   MMAL_BOOL_T show_shutter;
+   MMAL_BOOL_T show_analog_gain;
+   MMAL_BOOL_T show_lens;
+   MMAL_BOOL_T show_caf;
+   MMAL_BOOL_T show_motion;
+   MMAL_BOOL_T show_frame_num;
+   MMAL_BOOL_T enable_text_background;
+   MMAL_BOOL_T custom_background_colour;
+   uint8_t     custom_background_Y;
+   uint8_t     custom_background_U;
+   uint8_t     custom_background_V;
+   uint8_t     dummy1;
+   MMAL_BOOL_T custom_text_colour;
+   uint8_t     custom_text_Y;
+   uint8_t     custom_text_U;
+   uint8_t     custom_text_V;
+   uint8_t     text_size;
+   char text[MMAL_CAMERA_ANNOTATE_MAX_TEXT_LEN_V3];
+} MMAL_PARAMETER_CAMERA_ANNOTATE_V3_T;
+
+#define MMAL_CAMERA_ANNOTATE_MAX_TEXT_LEN_V4 256
+typedef struct MMAL_PARAMETER_CAMERA_ANNOTATE_V4_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_BOOL_T enable;
+   MMAL_BOOL_T show_shutter;
+   MMAL_BOOL_T show_analog_gain;
+   MMAL_BOOL_T show_lens;
+   MMAL_BOOL_T show_caf;
+   MMAL_BOOL_T show_motion;
+   MMAL_BOOL_T show_frame_num;
+   MMAL_BOOL_T enable_text_background;
+   MMAL_BOOL_T custom_background_colour;
+   uint8_t     custom_background_Y;
+   uint8_t     custom_background_U;
+   uint8_t     custom_background_V;
+   uint8_t     dummy1;
+   MMAL_BOOL_T custom_text_colour;
+   uint8_t     custom_text_Y;
+   uint8_t     custom_text_U;
+   uint8_t     custom_text_V;
+   uint8_t     text_size;
+   char text[MMAL_CAMERA_ANNOTATE_MAX_TEXT_LEN_V3];
+   uint32_t    justify; //0=centre, 1=left, 2=right
+   uint32_t    x_offset; //Offset from the justification edge
+   uint32_t    y_offset;
+} MMAL_PARAMETER_CAMERA_ANNOTATE_V4_T;
+
 typedef enum MMAL_STEREOSCOPIC_MODE_T {
    MMAL_STEREOSCOPIC_MODE_NONE = 0,
    MMAL_STEREOSCOPIC_MODE_SIDE_BY_SIDE = 1,
@@ -762,6 +828,110 @@ typedef struct MMAL_PARAMETER_STEREOSCOPIC_MODE_T
    MMAL_BOOL_T swap_eyes;
 } MMAL_PARAMETER_STEREOSCOPIC_MODE_T;
 
+typedef enum MMAL_CAMERA_INTERFACE_T {
+   MMAL_CAMERA_INTERFACE_CSI2 = 0,
+   MMAL_CAMERA_INTERFACE_CCP2 = 1,
+   MMAL_CAMERA_INTERFACE_CPI = 2,
+   MMAL_CAMERA_INTERFACE_MAX = 0x7FFFFFFF,
+} MMAL_CAMERA_INTERFACE_T;
+
+typedef struct MMAL_PARAMETER_CAMERA_INTERFACE_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_CAMERA_INTERFACE_T mode;
+} MMAL_PARAMETER_CAMERA_INTERFACE_T;
+
+typedef enum MMAL_CAMERA_CLOCKING_MODE_T {
+   MMAL_CAMERA_CLOCKING_MODE_STROBE = 0,
+   MMAL_CAMERA_CLOCKING_MODE_CLOCK = 1,
+   MMAL_CAMERA_CLOCKING_MODE_MAX = 0x7FFFFFFF,
+} MMAL_CAMERA_CLOCKING_MODE_T;
+
+typedef struct MMAL_PARAMETER_CAMERA_CLOCKING_MODE_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_CAMERA_CLOCKING_MODE_T mode;
+} MMAL_PARAMETER_CAMERA_CLOCKING_MODE_T;
+
+typedef enum MMAL_CAMERA_RX_CONFIG_DECODE {
+   MMAL_CAMERA_RX_CONFIG_DECODE_NONE = 0,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM8TO10 = 1,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM7TO10 = 2,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM6TO10 = 3,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM8TO12 = 4,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM7TO12 = 5,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM6TO12 = 6,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM10TO14 = 7,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM8TO14 = 8,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM12TO16 = 9,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM10TO16 = 10,
+   MMAL_CAMERA_RX_CONFIG_DECODE_DPCM8TO16 = 11,
+   MMAL_CAMERA_RX_CONFIG_DECODE_MAX = 0x7FFFFFFF
+} MMAL_CAMERA_RX_CONFIG_DECODE;
+
+typedef enum MMAL_CAMERA_RX_CONFIG_ENCODE {
+   MMAL_CAMERA_RX_CONFIG_ENCODE_NONE = 0,
+   MMAL_CAMERA_RX_CONFIG_ENCODE_DPCM10TO8 = 1,
+   MMAL_CAMERA_RX_CONFIG_ENCODE_DPCM12TO8 = 2,
+   MMAL_CAMERA_RX_CONFIG_ENCODE_DPCM14TO8 = 3,
+   MMAL_CAMERA_RX_CONFIG_ENCODE_MAX = 0x7FFFFFFF
+} MMAL_CAMERA_RX_CONFIG_ENCODE;
+
+typedef enum MMAL_CAMERA_RX_CONFIG_UNPACK {
+   MMAL_CAMERA_RX_CONFIG_UNPACK_NONE = 0,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_6 = 1,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_7 = 2,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_8 = 3,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_10 = 4,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_12 = 5,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_14 = 6,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_16 = 7,
+   MMAL_CAMERA_RX_CONFIG_UNPACK_MAX = 0x7FFFFFFF
+} MMAL_CAMERA_RX_CONFIG_UNPACK;
+
+typedef enum MMAL_CAMERA_RX_CONFIG_PACK {
+   MMAL_CAMERA_RX_CONFIG_PACK_NONE = 0,
+   MMAL_CAMERA_RX_CONFIG_PACK_8 = 1,
+   MMAL_CAMERA_RX_CONFIG_PACK_10 = 2,
+   MMAL_CAMERA_RX_CONFIG_PACK_12 = 3,
+   MMAL_CAMERA_RX_CONFIG_PACK_14 = 4,
+   MMAL_CAMERA_RX_CONFIG_PACK_16 = 5,
+   MMAL_CAMERA_RX_CONFIG_PACK_RAW10 = 6,
+   MMAL_CAMERA_RX_CONFIG_PACK_RAW12 = 7,
+   MMAL_CAMERA_RX_CONFIG_PACK_MAX = 0x7FFFFFFF
+} MMAL_CAMERA_RX_CONFIG_PACK;
+
+typedef struct MMAL_PARAMETER_CAMERA_RX_CONFIG_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_CAMERA_RX_CONFIG_DECODE decode;
+   MMAL_CAMERA_RX_CONFIG_ENCODE encode;
+   MMAL_CAMERA_RX_CONFIG_UNPACK unpack;
+   MMAL_CAMERA_RX_CONFIG_PACK pack;
+   uint32_t data_lanes;
+   uint32_t encode_block_length;
+   uint32_t embedded_data_lines;
+   uint32_t image_id;
+} MMAL_PARAMETER_CAMERA_RX_CONFIG_T;
+
+typedef struct MMAL_PARAMETER_CAMERA_RX_TIMING_T
+{
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   uint32_t timing1;
+   uint32_t timing2;
+   uint32_t timing3;
+   uint32_t timing4;
+   uint32_t timing5;
+   uint32_t term1;
+   uint32_t term2;
+   uint32_t cpi_timing1;
+   uint32_t cpi_timing2;
+} MMAL_PARAMETER_CAMERA_RX_TIMING_T;
+
 typedef struct MMAL_PARAMETER_LENS_SHADING_T
 {
    MMAL_PARAMETER_HEADER_T hdr;
@@ -774,5 +944,54 @@ typedef struct MMAL_PARAMETER_LENS_SHADING_T
    uint32_t mem_handle_table;
    uint32_t ref_transform;
 } MMAL_PARAMETER_LENS_SHADING_T;
+
+/*
+The mode determines the kind of resize.
+MMAL_RESIZE_BOX allow the max_width and max_height to set a bounding box into
+which the output must fit.
+MMAL_RESIZE_BYTES allows max_bytes to set the maximum number of bytes into which the
+full output frame must fit.  Two flags aid the setting of the output
+size. preserve_aspect_ratio sets whether the resize should
+preserve the aspect ratio of the incoming
+image. allow_upscaling sets whether the resize is allowed to
+increase the size of the output image compared to the size of the
+input image.
+*/
+typedef enum MMAL_RESIZEMODE_T {
+   MMAL_RESIZE_NONE,
+   MMAL_RESIZE_CROP,
+   MMAL_RESIZE_BOX,
+   MMAL_RESIZE_BYTES,
+   MMAL_RESIZE_DUMMY = 0x7FFFFFFF
+} MMAL_RESIZEMODE_T;
+
+typedef struct MMAL_PARAMETER_RESIZE_T {
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_RESIZEMODE_T mode;
+   uint32_t max_width;
+   uint32_t max_height;
+   uint32_t max_bytes;
+   MMAL_BOOL_T preserve_aspect_ratio;
+   MMAL_BOOL_T allow_upscaling;
+} MMAL_PARAMETER_RESIZE_T;
+
+typedef struct MMAL_PARAMETER_CROP_T {
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_RECT_T rect;
+} MMAL_PARAMETER_CROP_T;
+
+typedef struct MMAL_PARAMETER_CCM_T {
+   MMAL_RATIONAL_T ccm[3][3];
+   int32_t offsets[3];
+} MMAL_PARAMETER_CCM_T;
+
+typedef struct MMAL_PARAMETER_CUSTOM_CCM_T {
+   MMAL_PARAMETER_HEADER_T hdr;
+
+   MMAL_BOOL_T enable;           /**< Enable the custom CCM. */
+   MMAL_PARAMETER_CCM_T ccm;     /**< CCM to be used. */
+} MMAL_PARAMETER_CUSTOM_CCM_T;
 
 #endif  /* MMAL_PARAMETERS_CAMERA_H */
