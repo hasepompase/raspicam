@@ -223,6 +223,9 @@ namespace raspicam {
             case RASPICAM_FORMAT_YUV420:
                 return getWidth() *getHeight() + 2* ( ( getWidth() /2 *getHeight() /2 ) );
                 break;
+            case RASPICAM_FORMAT_YUYV:
+                return getWidth() *getHeight() + 2* ( ( getWidth() /2 *getHeight() ) );
+                break;
             case RASPICAM_FORMAT_GRAY:
                 return getWidth() *getHeight();
                 break;
@@ -646,6 +649,8 @@ namespace raspicam {
                         int bpp = 1;
                         if(fmt == RASPICAM_FORMAT_RGB || fmt == RASPICAM_FORMAT_BGR) {
                             bpp = 3;
+                        } else if(fmt == RASPICAM_FORMAT_YUYV){
+                            bpp = 2;
                         }
 
                         for(int i = 0; i < height; i++) {
@@ -998,6 +1003,8 @@ namespace raspicam {
                 return MMAL_ENCODING_I420;
             case RASPICAM_FORMAT_YUV420:
                 return MMAL_ENCODING_I420;
+            case RASPICAM_FORMAT_YUYV:
+                return MMAL_ENCODING_YUYV;
             default:
                 return MMAL_ENCODING_I420;
             }

@@ -44,6 +44,7 @@ namespace raspicam {
      */
     enum RASPICAM_FORMAT{
         RASPICAM_FORMAT_YUV420,
+        RASPICAM_FORMAT_YUYV,
         RASPICAM_FORMAT_GRAY,
         RASPICAM_FORMAT_BGR,
         RASPICAM_FORMAT_RGB,
