@@ -187,9 +187,16 @@ namespace raspicam {
         /**
         *
          */
-        bool Private_Impl::grab() {
+        bool Private_Impl::grab( const bool next ) {
             if ( !isCapturing() ) return false;
-            callback_data.waitForFrame();
+
+            uint64_t timeStamp = 0;
+            if( next ) {
+                 mmal_port_parameter_get_uint64( State.camera_component->control,
+                                                 MMAL_PARAMETER_SYSTEM_TIME,
+                                                 &timeStamp );
+            }
+            callback_data.waitForFrame( timeStamp );
             return true;
         }
         /**
@@ -300,7 +307,7 @@ namespace raspicam {
             cam_config.num_preview_video_frames = 3;
             cam_config.stills_capture_circular_buffer_height = 0;
             cam_config.fast_preview_resume = 0;
-            cam_config.use_stc_timestamp = MMAL_PARAM_TIMESTAMP_MODE_RESET_STC;
+            cam_config.use_stc_timestamp = MMAL_PARAM_TIMESTAMP_MODE_RAW_STC;
             mmal_port_parameter_set ( camera->control, &cam_config.hdr );
 
             // set lens shading parameters
@@ -623,7 +630,8 @@ namespace raspicam {
              std::unique_lock<std::mutex> lck ( pData->_mutex );
             if ( pData ) {
                 if( buffer->length &&
-                        ( pData->_userCallback || pData->wantToGrab )){
+                    ( pData->_userCallback || pData->wantToGrab ) &&
+                    pData->timeStampLimit <= buffer->pts ){
                     mmal_buffer_header_mem_lock ( buffer );
 
                     Private_Impl *self = pData->inst;

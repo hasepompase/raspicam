@@ -60,8 +60,8 @@ namespace raspicam {
 
     bool RaspiCam::isOpened() const {return _impl->isOpened();}
 
-    bool RaspiCam::grab() {
-        return _impl->grab();
+    bool RaspiCam::grab( const bool next ) {
+        return _impl->grab( next );
     }
 
     void RaspiCam::retrieve ( unsigned char *data,RASPICAM_FORMAT type ) {

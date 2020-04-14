@@ -74,8 +74,9 @@ namespace raspicam {
         */
         bool isOpened() const ;
         /**Grabs the next frame and keeps it in internal buffer. Blocks until next frame arrives
+         * With the parameter next it can be ensured that the entire image will be captured after calling grab.
         */
-        bool grab();
+        bool grab( const bool next = false );
         /**Retrieves the buffer previously grabbed.
          * You can decide how image is given by setting type. The input buffer provided must have the appropriate
          * size accordingly. You can use getImageTypeSize() to determine the size

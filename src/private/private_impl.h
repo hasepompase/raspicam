@@ -60,10 +60,10 @@ namespace raspicam {
                     wantToGrab=false;
                     pstate=0;
                 }
-                void waitForFrame() {
+                void waitForFrame( const uint64_t timeStamp = 0 ) {
                     //_mutex.lock();
                     std::unique_lock<std::mutex> lck ( _mutex );
-
+                    timeStampLimit = timeStamp;
                     wantToGrab=true;
 //                    _mutex.unlock();
 //                    Thcond.Wait();
@@ -77,6 +77,7 @@ namespace raspicam {
                 std::mutex _mutex;
                 ThreadCondition Thcond;
                 bool wantToGrab;
+                int64_t timeStampLimit;
                 membuf<unsigned char> _buffData;
 
                 /* User define callback interface */
@@ -117,7 +118,7 @@ namespace raspicam {
 
             /**Grabs the next frame and keeps it in internal buffer. Blocks until next frame arrives
             */
-            bool grab();
+            bool grab( const bool next = false );
             /**Retrieves the buffer previously grabbed.
             * NOTE: Change in version 0.0.5. Format is stablished in setFormat function
             * So type param is ignored. Do not use this parameter.
