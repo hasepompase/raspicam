@@ -117,9 +117,9 @@ namespace raspicam {
         RASPICAM_METERING_BACKLIT,
         RASPICAM_METERING_MATRIX
     }  ;
-    /*Econdig modes (for still mode)
-     */
 
+    /**Econdig modes (for still mode)
+     */
     typedef enum RASPICAM_ENCODING {
         RASPICAM_ENCODING_JPEG,
         RASPICAM_ENCODING_BMP,
@@ -128,6 +128,14 @@ namespace raspicam {
         RASPICAM_ENCODING_RGB
     } RASPICAM_ENCODING;
 
+    /**Camera model
+     */
+    typedef enum RASPICAM_SENSOR {
+        RASPICAM_SENSOR_OV5647,   /**< OmniVision OV5647 V1 */
+        RASPICAM_SENSOR_IMX219,   /**< Sony IMX219       V2 */
+        RASPICAM_SENSOR_IMX477,   /**< Sony IMX477       HQ */
+        RASPICAM_SENSOR_UNKNOWN   /**< Unknown              */
+    } RASPICAM_SENSOR;
 }
 #endif
 

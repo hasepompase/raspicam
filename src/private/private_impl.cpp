@@ -58,6 +58,7 @@ namespace raspicam {
             _isCapturing=false;
             //set default state params
             setDefaultStateParams();
+            detect_sensor();
         }
 
         Private_Impl::~Private_Impl() {
@@ -106,7 +107,7 @@ namespace raspicam {
             State.ls_data = NULL;
             State.again = 0;
             State.dgain = 0;
-
+            State.sensor = RASPICAM_SENSOR_UNKNOWN;
         }
         bool  Private_Impl::open ( bool StartCapture ) {
             if ( _isOpened ) return false; //already opened
@@ -261,6 +262,46 @@ namespace raspicam {
                 state->camera_component = NULL;
             }
         }
+
+        void Private_Impl::detect_sensor( void )
+        {
+            MMAL_COMPONENT_T* component_cam_info;
+            MMAL_STATUS_T     status;
+
+            State.sensor = RASPICAM_SENSOR_UNKNOWN;
+
+            status = mmal_component_create( MMAL_COMPONENT_DEFAULT_CAMERA_INFO, &component_cam_info );
+
+            if( status == MMAL_SUCCESS ) {
+                MMAL_PARAMETER_CAMERA_INFO_T param_cam_info;
+                param_cam_info.hdr.id   = MMAL_PARAMETER_CAMERA_INFO;
+                param_cam_info.hdr.size = sizeof( param_cam_info ) - 4; // Try old firmware
+                status = mmal_port_parameter_get( component_cam_info->control, &param_cam_info.hdr );
+
+                if( status != MMAL_SUCCESS ) {
+                    param_cam_info.hdr.size = sizeof( param_cam_info ); // Try new firmware
+                    status = mmal_port_parameter_get( component_cam_info->control, &param_cam_info.hdr );
+
+                    if( status == MMAL_SUCCESS ) {
+                        const char* name = param_cam_info.cameras[ 0 ].camera_name;
+
+                        if( strcmp( name, "ov5647" ) == 0 ) {
+                            State.sensor = RASPICAM_SENSOR_OV5647;
+                        } else if( strcmp( name, "imx219" ) == 0 ) {
+                            State.sensor = RASPICAM_SENSOR_IMX219;
+                        } else if( strcmp( name, "testc" ) == 0 ||
+                                   strcmp( name, "imx477" ) == 0 ) {
+                            State.sensor = RASPICAM_SENSOR_IMX477;
+                        } else {
+                            State.sensor = RASPICAM_SENSOR_UNKNOWN;
+                        }
+                    }
+               }
+
+               mmal_component_destroy( component_cam_info );
+            }
+        }
+
         MMAL_COMPONENT_T *Private_Impl::create_camera_component ( RASPIVID_STATE *state ) {
             MMAL_COMPONENT_T *camera = 0;
             MMAL_ES_FORMAT_T *format;

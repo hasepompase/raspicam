@@ -176,7 +176,7 @@ namespace raspicam {
         bool isVerticallyFlipped() const ;
         float getAnalogGain() const;
         float getDigitalGain() const;
-
+        RASPICAM_SENSOR getSensor( void ) const;
 
         /** Returns an id of the camera. We assume the camera id is the one of the raspberry
         *the id is obtained using raspberry serial number obtained in /proc/cpuinfo

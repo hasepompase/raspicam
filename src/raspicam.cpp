@@ -180,7 +180,7 @@ namespace raspicam {
     bool RaspiCam::isVerticallyFlipped() const {return _impl->isVerticallyFlipped() ;}
     float RaspiCam::getAnalogGain() const {return _impl->getAnalogGain() ;}
     float RaspiCam::getDigitalGain() const {return _impl->getDigitalGain() ;}
-
+    RASPICAM_SENSOR RaspiCam::getSensor() const {return _impl->getSensor() ;}
     //Returns an id of the camera. We assume the camera id is the one of the raspberry
     //the id is obtained using raspberry serial number obtained in /proc/cpuinfo
     std::string RaspiCam::getId() const{return _impl->getId();}

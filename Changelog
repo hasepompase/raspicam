@@ -1,3 +1,5 @@
+0.1.5
+  - Getter for sensor (OV5647/IMX219/IMX477)
 0.1.4
   - Getter for video stabilization
   - Getter for exposure compensation

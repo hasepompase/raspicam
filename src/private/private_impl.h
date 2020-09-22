@@ -268,7 +268,10 @@ namespace raspicam {
             {
                 return State.dgain;
             }
-
+            RASPICAM_SENSOR getSensor( void ) const
+            {
+                return State.sensor;
+            }
 
             //Returns an id of the camera. We assume the camera id is the one of the raspberry
             //the id is obtained using raspberry serial number obtained in /proc/cpuinfo
@@ -284,6 +287,7 @@ namespace raspicam {
             void setDefaultStateParams();
             MMAL_COMPONENT_T *create_camera_component ( RASPIVID_STATE *state );
             void destroy_camera_component ( RASPIVID_STATE *state );
+            void detect_sensor( void );
 
 
             //Commit

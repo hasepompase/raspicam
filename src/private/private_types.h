@@ -93,6 +93,7 @@ namespace raspicam {
             uint8_t* ls_data;
             float again;
             float dgain;
+            RASPICAM_SENSOR sensor;
         } ;
 
         //clean buffer
